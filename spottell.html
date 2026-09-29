@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  html,body{margin:0}
+  body{background:#f6f3ed}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<title>Signs of AI-writing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#FEFBE9;  --surface:#FFFFFF; --surface-2:#F1ECE2; --ink:#1B2530; --ink-soft:#586170;
+  --line:#E4DED2; --line-2:#D8D0C1;
+  --brand:#21486B; --brand-2:#2E6098; --brand-soft:#E8EEF5;
+  --tell-bg:#F8E2A6; --tell-ink:#6A4C10; --tell-line:#E3B646;
+  --ai:#B23A3A; --ai-soft:#FBEDED; --human:#2E7D46; --human-soft:#E7F2EB;
+  --good:#2E7D46; --warn:#B0771A; --weak:#868C96; --flip:#BF6128;
+  --shadow:0 1px 2px rgba(20,30,45,.05),0 8px 26px rgba(20,30,45,.07);
+  --radius:14px;
+  color-scheme:light;
+}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+  --bg:#12161B; --surface:#1A2027; --surface-2:#232B34; --ink:#E8EAED; --ink-soft:#A3ACB7;
+  --line:#2A323C; --line-2:#38424E;
+  --brand:#84B2DD; --brand-2:#9AC2E8; --brand-soft:#1D2A38;
+  --tell-bg:#4C3C15; --tell-ink:#F5D98A; --tell-line:#7C6224;
+  --ai:#E48C8C; --ai-soft:#33242440; --human:#8FD0A3; --human-soft:#22302940;
+  --good:#8FD0A3; --warn:#E0B25A; --weak:#8B929C; --flip:#DB8A55;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#12161B; --surface:#1A2027; --surface-2:#232B34; --ink:#E8EAED; --ink-soft:#A3ACB7;
+  --line:#2A323C; --line-2:#38424E;
+  --brand:#84B2DD; --brand-2:#9AC2E8; --brand-soft:#1D2A38;
+  --tell-bg:#4C3C15; --tell-ink:#F5D98A; --tell-line:#7C6224;
+  --ai:#E48C8C; --ai-soft:#33242440; --human:#8FD0A3; --human-soft:#22302940;
+  --good:#8FD0A3; --warn:#E0B25A; --weak:#8B929C; --flip:#DB8A55;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  line-height:1.55;-webkit-font-smoothing:antialiased;margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.serif{font-family:"Fraunces","Iowan Old Style",Georgia,serif}
+
+/* ---------- header / progress ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-inner{max-width:720px;margin:0 auto;padding:10px 16px 12px;display:flex;flex-direction:column;gap:8px}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;letter-spacing:.2px}
+.brand .mk{width:26px;height:26px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;
+  font-family:"Fraunces",serif;font-weight:600;font-size:15px;flex:none}
+.stepmeta{font-size:12px;color:var(--ink-soft)}
+.stepmeta b{color:var(--ink);font-weight:600}
+.bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar>i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand-2));
+  transition:width .45s cubic-bezier(.4,0,.2,1)}
+.themeBtn{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:9px;
+  width:32px;height:32px;cursor:pointer;font-size:14px;display:grid;place-items:center;flex:none}
+.themeBtn:hover{color:var(--ink);border-color:var(--line-2)}
+
+/* ---------- stage ---------- */
+.stage{max-width:720px;margin:0 auto;padding:22px 16px 96px}
+.card{animation:rise .4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-2);font-weight:600}
+.cuehead{display:flex;gap:14px;align-items:flex-start;margin-top:12px}
+.badge{flex:none;width:46px;height:46px;border-radius:12px;background:var(--brand);color:#fff;
+  display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:600;font-size:19px;box-shadow:var(--shadow)}
+h1.title{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(24px,5.4vw,32px);line-height:1.12;
+  margin:0;text-wrap:balance;letter-spacing:-.01em}
+.verdict{display:inline-flex;align-items:center;gap:7px;margin-top:9px;font-size:12.5px;font-weight:600;
+  padding:4px 11px;border-radius:99px;border:1px solid var(--line);background:var(--surface)}
+.verdict .dot{width:9px;height:9px;border-radius:99px;flex:none}
+.v-strong{color:var(--good)} .v-strong .dot{background:var(--good)}
+.v-mod{color:var(--warn)} .v-mod .dot{background:var(--warn)}
+.v-weak{color:var(--weak)} .v-weak .dot{background:var(--weak)}
+.v-flip{color:var(--flip)} .v-flip .dot{background:var(--flip)}
+
+.teach{font-size:16.5px;color:var(--ink);margin:18px 0 0}
+.teach p{margin:0 0 11px}
+.teach .word-list{background:var(--brand-soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px}
+.teach .word-list .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:4px}
+.fade{color:var(--ink-soft)}
+
+/* prevalence */
+.prev{margin:18px 0 4px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;box-shadow:var(--shadow)}
+.prev .cap{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:10px}
+.prow{display:grid;grid-template-columns:52px 1fr 42px;align-items:center;gap:10px;margin:7px 0}
+.prow .k{font-size:11px;letter-spacing:.08em;font-weight:600;color:var(--ink-soft)}
+.ptrack{height:12px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.ptrack>i{display:block;height:100%;border-radius:99px;width:0;transition:width .7s cubic-bezier(.3,.7,.2,1)}
+.prow.ai .ptrack>i{background:var(--brand)} .prow.hu .ptrack>i{background:var(--line-2)}
+.prow .val{font-size:13px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.prev .foot{font-size:12px;color:var(--ink-soft);margin-top:9px;line-height:1.45}
+.judge{margin:18px 0 4px;font-size:13px;color:var(--ink-soft);border:1px dashed var(--line-2);border-radius:10px;padding:9px 12px;background:var(--surface)}
+
+/* graphite-style per-model table */
+.gt{margin:18px 0 4px}
+.gt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(188px,1fr));gap:12px}
+.gt-col{border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.gt-model{font-weight:600;font-size:12.5px;padding:9px 12px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.gt-tab{width:100%;border-collapse:collapse;font-size:13px}
+.gt-tab th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;padding:8px 12px 4px}
+.gt-tab th:last-child,.gt-tab td:last-child{text-align:right}
+.gt-tab td{padding:7px 12px}
+.gt-tab tbody tr+tr td{border-top:1px solid var(--line)}
+.gt-tab td:first-child{font-weight:600}
+.gt-tab td:last-child{font-variant-numeric:tabular-nums;color:var(--brand);font-weight:600}
+.gt-src{font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:1.45}
+
+/* examples */
+.exwrap{margin:16px 0 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.exwrap .exlbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;
+  padding:9px 14px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.ex{padding:12px 14px;font-size:15.5px;background:var(--surface);border-left:4px solid transparent}
+.ex+.ex{border-top:1px solid var(--line)}
+.ex .who{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;font-weight:600;display:block;margin-bottom:5px}
+.ex.ai{border-left-color:var(--ai)} .ex.ai .who{color:var(--ai)}
+.ex.hu{border-left-color:var(--human)} .ex.hu .who{color:var(--human)}
+.ex .note{color:var(--ink-soft);font-style:italic;font-size:12.5px}
+.t{background:var(--tell-bg);color:var(--tell-ink);border-radius:5px;padding:.5px 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  border-bottom:1.5px solid var(--tell-line);font-weight:500}
+
+/* question */
+.q{margin:26px 0 0;border:1.5px solid var(--brand-soft);border-radius:var(--radius);background:var(--surface);
+  box-shadow:var(--shadow);overflow:hidden}
+.q .qtop{padding:13px 16px 0}
+.q .qkind{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-2);font-weight:600}
+.q .qp{font-size:16px;font-weight:600;margin:6px 0 2px;line-height:1.4}
+.q .qhint{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px}
+.opts{padding:2px 16px 6px;display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;border:1.5px solid var(--line);border-radius:11px;
+  cursor:pointer;background:var(--surface);transition:border-color .15s,background .15s;font-size:15px}
+.opt:hover{border-color:var(--line-2)}
+.opt input{margin:2px 0 0;accent-color:var(--brand);width:17px;height:17px;flex:none;cursor:pointer}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.ok{border-color:var(--good);background:var(--human-soft)}
+.opt.bad{border-color:var(--ai);background:var(--ai-soft)}
+.opt .mk{margin-left:auto;font-weight:700;font-size:15px;opacity:0;flex:none}
+.opt.ok .mk{opacity:1;color:var(--good)} .opt.bad .mk{opacity:1;color:var(--ai)}
+.opt.locked{cursor:default}
+.qfoot{padding:4px 16px 16px;display:flex;flex-direction:column;gap:11px}
+.feedback{font-size:14px;font-weight:500;display:none;align-items:flex-start;gap:8px;line-height:1.45}
+.feedback.show{display:flex}
+.feedback.wrong{color:var(--ai)}
+.feedback.right{color:var(--good)}
+.feedback .ftxt{font-weight:400;color:var(--ink)}
+.feedback .ftxt b{color:var(--good)}
+
+/* buttons */
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:15;background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(8px);border-top:1px solid var(--line);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.actions-inner{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.btn{font-family:inherit;font-size:15px;font-weight:600;border-radius:11px;padding:12px 20px;cursor:pointer;border:1px solid transparent;transition:.15s}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:var(--shadow)}
+.btn.primary:hover:not(:disabled){background:var(--brand-2)}
+.btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--line-2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary:disabled{background:var(--surface-2);color:var(--ink-soft);border-color:var(--line);box-shadow:none}
+.grow{flex:1}
+.checkBtn{font-family:inherit;font-size:14.5px;font-weight:600;border-radius:10px;padding:10px 18px;cursor:pointer;
+  border:1px solid var(--brand);background:var(--brand);color:#fff;align-self:flex-start}
+.checkBtn:hover:not(:disabled){background:var(--brand-2)}
+.checkBtn:disabled{opacity:.4;cursor:not-allowed}
+
+/* intro & done */
+.hero{text-align:left;padding:14px 0 0}
+.hero h1{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(32px,8vw,52px);line-height:1.04;margin:14px 0 0;letter-spacing:-.02em;text-wrap:balance}
+.hero .lede{font-size:17px;color:var(--ink-soft);max-width:52ch;margin:16px 0 0}
+.rule{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:16px 18px;margin:22px 0 0;box-shadow:var(--shadow)}
+.rule .rl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-2);font-weight:600}
+.rule p{margin:6px 0 0;font-size:15.5px}
+.how{display:flex;flex-direction:column;gap:12px;margin:20px 0 0}
+.how .step{display:flex;gap:12px;align-items:flex-start}
+.how .n{flex:none;width:26px;height:26px;border-radius:8px;background:var(--brand-soft);color:var(--brand-2);
+  display:grid;place-items:center;font-weight:700;font-size:13px;font-family:"IBM Plex Mono",monospace}
+.how .st{font-size:15px}.how .st b{font-weight:600}
+.tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-soft);
+  border:1px solid var(--line);border-radius:99px;padding:3px 10px;margin-top:18px}
+.done .big{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,7vw,44px);line-height:1.06;margin:6px 0 0;letter-spacing:-.01em}
+.checkring{width:64px;height:64px;border-radius:99px;background:var(--human-soft);border:2px solid var(--human);
+  display:grid;place-items:center;color:var(--human);font-size:30px;margin-bottom:6px}
+.recap{margin:22px 0 0;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.recap .rrow{display:flex;justify-content:space-between;gap:12px;padding:10px 15px;font-size:14px;align-items:center}
+.recap .rrow+.rrow{border-top:1px solid var(--line)}
+.recap .rrow .rid{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--brand-2);font-size:12.5px}
+.recap .rv{font-size:12px;font-weight:600}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="top-row">
+      <div class="brand"><span>Signs of AI-writing</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="stepmeta" id="stepmeta"></span>
+        <button class="themeBtn" id="themeBtn" title="Toggle theme" aria-label="Toggle light or dark">◐</button>
+      </div>
+    </div>
+    <div class="bar"><i id="progfill"></i></div>
+  </div>
+</header>
+
+<main class="stage" id="stage"></main>
+
+<div class="actions" id="actionbar" hidden>
+  <div class="actions-inner">
+    <button class="btn ghost" id="backBtn">Back</button>
+    <div class="grow"></div>
+    <button class="btn primary" id="nextBtn">Continue</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ---------------- content ---------------- */
+const CUES = [
+  { id:"1a", section:"Words & phrases", title:"The most frequently used vocabulary",
+   prev:{ai:64,human:27}, verdict:{label:"Moderate signal",cls:"v-mod"},
+   teach:`<p>AI overuses a set of common formal words. Observing one word in a passage might not tell us it's AI-generated, but seeing many of them in a passage is a big hint that it's AI-generated text.</p>
+   <div class="word-list"><span class="lbl">Words to look out for</span>underscore, pivotal, landscape, nuanced, navigate, unlock, elevate, meticulous, unforgettable, delve, crucial, tapestry, testament, showcase, intricate, vibrant, foster, multifaceted, seamless, robust, leverage, harness, embark.</div>`,
+   ex:[{who:"ai",html:`Our city's markets are a <span class="t">vibrant tapestry</span> of culture that <span class="t">underscores</span> its rich heritage, offering visitors a <span class="t">seamless</span> and <span class="t">multifaceted</span> experience that is a true <span class="t">testament</span> to community spirit.`},
+       {who:"hu",html:`People from different localities, representing diverse cultures, come to our local market, held every Saturday. The whole place is filled with people chatting about recent events in their respective neighbourhoods.`}],
+   evidence:`63% of AI passages have these words, whereas 28% of human passages also have these. So we can flag a passage as AI only when many of these words appear in it, or we should be able to back that up with other signs of AI writing.`,
+   q:{kind:"multi",prompt:"Which of these words are overused by AI?",hint:"Select all that apply.",
+      options:[{html:"seamless",correct:true},{html:"robust",correct:true},{html:"myriad",correct:false},{html:"picturesque",correct:false},{html:"vibrant",correct:true}],
+      explain:"Words like seamless, robust and vibrant appear a lot in AI text. Words like myriad or picturesque don't appear a lot in AI text."}},
+
+ { id:"1b", section:"Words & phrases", title:"Promotional / Marketing-style language",
+   prev:{ai:9,human:5}, verdict:{label:"Moderate signal",cls:"v-mod"},
+   teach:`<p>When we ask AI to write about something, it often produces text that would appear in a travel guide or an advertisement: everything is stunning, breathtaking, and world-class. It often feels like we are reading an advertisement.</p>
+   <div class="word-list"><span class="lbl">Words to look out for</span> <em>breathtaking, stunning, must-visit, hidden gem, rich cultural heritage, iconic, world-class, unforgettable, "boasts a…", "stands as a…".</em></div>`,
+   ex:[{who:"ai",html:`This <span class="t">hidden gem</span> <span class="t">boasts a rich cultural heritage</span> and <span class="t">stunning</span>, <span class="t">breathtaking</span> views. It <span class="t">stands as a world-class</span> destination with an <span class="t">iconic</span> atmosphere, making it a truly <span class="t">unforgettable</span> and <span class="t">must-visit</span> experience.`},
+       {who:"hu",html:`The Park on top of the hill near my home attracts many tourists every day. It's also quite famous among locals as a weekend destination for its beautiful view of the town.`}],
+   evidence:`AI uses these promotional words/phrases twice as often as Humans. But we shouldn't rely solely on this clue to decide whether a passage is AI-written or not.`,
+   q:{kind:"single",prompt:"Which sentence uses promotional language?",hint:"Pick one.",
+  options:[
+    {
+      html:`"Bangkok stands as one of Asia's most captivating destinations, offering visitors an exhilarating blend of ancient traditions and cutting-edge modernity."`,
+      correct:true
+    },
+    {
+      html:`"The increase in tourists visiting Bangkok each year has proven that Bangkok is always a popular city for tourists."`,
+      correct:false
+    },
+    {
+      html:`"Most major tourist attractions in Bangkok are historical or religious sites, such as temples."`,
+      correct:false
+    }
+  ],
+  explain:"The first sentence uses 'stands as',  'most captivating', 'exhilarating blend of ancient traditions and cutting-edge modernity', which promote the destination, whereas other sentences describe concrete facts."
+}},
+  { id:"1c", section:"Words & phrases", title:"Evaluative adjectives",
+      prev:{ai:62,human:14}, verdict:{label:"Moderate signal",cls:"v-mod"},
+   teach:`<p>These are words that <b>rate</b> something without describing it.</p>
+   <p>"The experiment produced a <b>meaningful</b> result." : Here, "meaningful" does not tell us what the result was. It just evaluates it positively by saying the result is meaningful.</p>
+   <p>"The system is <b>dependable</b>." : means the system is reliable, but it doesn't tell us <em>why</em> it is dependable. A more concrete description would have been: "The system completed 99.8% of requests without failure."</p>
+   <div class="word-list"><span class="lbl">Words to look out for</span>dependable, practical, meaningful, deliberate, measured, steady, incredibly, profound, immense.</div>`,
+   ex:[{who:"ai",html:`The system is <span class="t">dependable</span>.`},
+       {who:"hu",html:`The system completed 99.8% of requests without failure.`}],
+   evidence:`62% of AI-written passages use these evaluative adjectives, whereas only 14% of human-written passages do. So, it's a good clue to detect AI writing.`,
+   q:{kind:"single",prompt:"Which of these sentences only rates something, without describing what happened?",hint:"Pick one.",
+      options:[{html:`"The newly built highway has cut down the commute by 1 hour."`,correct:false},{html:`"The highway opened to traffic on April 1."`,correct:false},{html:`"The newly built highway represents a profound transformation for the region."`,correct:true}],
+      explain:"The sentence containing “Profound” evaluates the change without specifying what it actually was. The other sentences specify a concrete and verifiable fact."}},
+
+ { id:"1d", section:"Words & phrases", title:"Transitions",
+      prev:{ai:12,human:1}, verdict:{label:"Strong signal",cls:"v-strong"},
+   teach:`<p>Transitions are words and phrases that connect ideas. They can be used to move from one idea to another. AI uses these transition phrases much more often than humans do.</p>
+   <div class="word-list"><span class="lbl">Phrases to look out for</span>another dimension, what comes next, looking ahead the, together these, furthermore the, ultimately this, additionally the.</div>`,
+   ex:[{who:"ai",html:`Observing the city with a companion adds <span class="t">another dimension</span> to the research. Shared attention can reveal what one person alone might miss, while conversation helps turn fleeting impressions into clearer creative possibilities. <span class="t">Together, these</span> observations reinforce the relationship between place, craft, and atmosphere.`},
+    {who:"hu",html:`We dined with my cousin, and his son and his girl and felt that at the end of the day there was no more to be done. Off to Delhi we said — another cool spot — off to Delhi, cause it's really hot!`}],
+   evidence:`AI uses these phrases almost 10 times more often than humans do.`,
+   q:{kind:"multi",prompt:"Which of these connectors does AI use to connect ideas?",hint:"Select all that apply.",
+      options:[{html:"together, these",correct:true},{html:"but",correct:false},{html:"another dimension",correct:true},{html:"so",correct:false},{html:"furthermore, the",correct:true}],
+      explain:"AI tends to use connectors like 'together these', 'another dimension', and 'furthermore the' much more than humans do."}},
+
+ { id:"1e", section:"Words & phrases", title:"Avoiding trade-offs",
+    prev:{ai:10,human:1}, verdict:{label:"Strong signal",cls:"v-strong"},
+   teach:`<p>AI often uses words/phrases that promise one benefit without sacrificing another. This is known as avoiding trade-offs. A simple example can be "The company reduced prices without sacrificing quality."</p>
+   <div class="word-list"><span class="lbl">Phrases to look out for</span>without requiring, without losing, without sacrificing, without compromising.</div>`,
+   ex:[{who:"ai",html:`Containers can transfer between modes <span class="t">without requiring</span> the goods inside to be unloaded and repacked.`},
+    {who:"hu",html:`For our beneficial cargo owners, they understand the value of combining modes of transportation across the country to not only save money, but to also reduce their carbon footprint.`}],
+   q:{kind:"single",prompt:"Which of these sentences avoids the trade-off? ",hint:"Pick one.",
+      options:[{html:`"The new route is faster, but we miss out on the beautiful coastal views of the old route."`,correct:false},{html:`"The new route saves about 20 minutes."`,correct:false},{html:`"The new route is faster without losing any convenience."`,correct:true}],
+      explain:"'Without losing any convenience' here implies that we don't lose out on convenience by taking the new route. AI uses these words much more than humans do. The other sentences state what we lose due to the new route or state a fact."}},
+
+   { id:"1f", section:"Words & phrases", title:"Phrases that don't convey useful information",
+   prev:{ai:13,human:1}, verdict:{label:"Strong signal",cls:"v-strong"},
+   teach:`<p>AI often uses phrases that do not convey useful information.</p>
+   <div class="word-list"><span class="lbl">Phrases to look out for</span>"looking ahead", "path forward", "in an era", "at its core".</div>`,
+   ex:[{who:"ai",html:`<span class="t">In an era</span> of rapid change, this technology stands out. <span class="t">At its core</span>, it reflects a broader shift in how we work. <span class="t">Looking ahead</span>, the <span class="t">path forward</span> is clear.`},
+       {who:"hu",html:`AI has changed the way we work. It helped in increasing the efficiency of our team.`}],
+   evidence:`Just 0.74% of human passages contain these phrases, whereas 12.73% of AI passages contain them. As humans rarely use them, it is a strong sign that can be used to detect AI-writing.`,
+   q:{kind:"multi",prompt:"Which of these phrases are used by AI but not a lot by Humans?",hint:"Select all that apply.",
+      options:[{html:"in the realm of",correct:false},{html:"looking ahead",correct:true},{html:"behind the scenes",correct:false},{html:"at its core",correct:true},{html:"path forward",correct:true}],
+      explain:""}},
+
+  { id:"2a", section:"Rhythm & structure", title:"AI tends to produce uniform sentences", 
+   prev:null, noJudge:true, verdict:{label:"Moderate signal",cls:"v-mod"}, 
+   teach:`<p>AI tends to produce sentences of similar length and grammatical shape, one after another, with few very short or very long ones. Humans usually vary their sentences more, i.e., a long sentence may be followed by a very short one or even a sentence fragment. This makes the human writing feel more natural and gives emphasis or punch (means to make a particular idea stand out and feel stronger).</p>
+   <div class="gt"><div class="gt-grid"><div class="gt-col">
+  <div class="gt-model">Sentence-length variation</div>
+  <table class="gt-tab">
+    <thead>
+      <tr>
+        <th>Writer</th>
+        <th>Mean sentence length</th>
+        <th>Mean SD (higher = more varied)</th>
+      </tr>
+    </thead>  
+    <tbody>
+      <tr><td>Human</td><td>27.52</td><td>22.69</td></tr>
+      <tr><td>AI (all 9 models)</td><td>19.56</td><td>7.81</td></tr>
+    </tbody>
+  </table>
+</div></div>
+<div class="gt-src">SD is calculated within each passage and then averaged across passages. Higher SD means greater variation in sentence length.</div></div>
+   </div></div></div>`,
+   ex:[{who:"ai",html:`<span class="t">The team worked hard all season. They trained every morning. They studied their opponents closely. They believed in their goal. Their effort paid off in the end.</span> <span class="note">— five sentences with similar length and rhythm.</span>`}, 
+    {who:"hu",html:`The Players have been preparing rigorously for the upcoming frisbee tournament despite encountering multiple issues, including weather and the unavailability of proper training equipment. Hope their efforts pay off.`}],   evidence:`In the table above, we can see the mean standard deviation of sentence length: 22.69 for humans vs. 7.81 for AI. Hence, humans vary sentence lengths more within a passage.`,
+   q:{kind:"single",prompt:"Which of the following examples have similar-length sentences that could be potentially AI-Written text?",hint:"Pick one.", 
+      options:[{html:`"The app is fast. It loads quickly. It works well. Users like it. Sales are up."`,correct:true},{html:`"The app loads quickly, works well and is quite fast. Users liked it a lot. This led to rise in sales."`,correct:false}], 
+      explain:"There isn't any variation in sentence length in the first example. These types of sentences could be potentially AI-written text."}},
+ 
+ { id:"2b", section:"Rhythm & structure", title:"AI often outputs Groups of three words (triads)", 
+   prev:{ai:92,human:79}, verdict:{label:"Moderate signal",cls:"v-mod"}, 
+   teach:`<p>AI commonly outputs lists of exactly three words, be it three adjectives, three phrases or three clauses. It uses these groups of three words a lot more compared to human-written text.</p>`, 
+   ex:[{who:"ai",html:`The software is <span class="t">fast, reliable, and easy to use</span>. It helps teams <span class="t">plan, build, and deliver</span> with confidence, making work <span class="t">simpler, smarter, and more efficient</span>.`}, 
+    {who:"hu",html:`The new software our team is launching this week is quite easy to use. It helps streamline one’s everyday tasks and improve efficiency at work. Our internal team’s productivity doubled after using this software. Hence, we decided to roll it out for our customers.`}],   evidence:`92% of the AI passages contain these groups of three words, and 79% of the human-written passages also contain them. So we need to look for other clues of AI writing in the passage, not just this group of three clues, to flag a particular passage as AI-written. But if a passage has a lot of these groups of three words, then it can be a sign of AI-writing (AI-writing has 7 such groups per 1000 words, whereas human writing has 3.464 such groups per 1000 words).`, 
+   q:{kind:"single",prompt:"You spot one group of three: “fast, reliable, and easy.” Is that enough to flag the text as AI?",hint:"Pick one.", 
+      options:[{html:"Yes, as a group of three is a proof of AI writing.",correct:false}, {html:"No, as people also use groups of three a lot. We need to back it up with other signs of AI-writing, or the passage should have many groups of three words for it to be flagged as AI written.",correct:true}, {html:"Yes, but only if the three things rhyme(all the three things in the group sound similar).",correct:false}], 
+      explain:"We will flag a passage as AI if we encounter many groups of three words in a passage, or if other signs of AI writing accompany it."}}, 
+ 
+ { id:"2c", section:"Rhythm & structure", title:`"It's not just X, it's Y"`, 
+   prev:{ai:68,human:21}, verdict:{label:"Strong signal",cls:"v-strong"}, 
+   teach:`<p>A common way of writing is to put two opposite ideas together to make the sentence sound deep or important. This is also known as negative parallelism. Some of the forms of negative parallelism are "not just X but also Y," "not X but Y," and "X rather than Y." Using it once is fine. But using it repeatedly is a sign of AI writing.</p>
+   <div class="word-list"><span class="lbl">Phrases to look for</span>
+   <em>"not just", "it's not just", "isn't just", "not merely", "more than just", "not only … but also", "rather than"</em>.
+   </div>`,
+   ex:[{who:"ai",html:`This <span class="t">isn’t just</span> a phone — <span class="t">it’s</span> a companion. <span class="t">It’s not merely</span> about features; <span class="t">it’s about</span> how they make you feel. This is <span class="t">more than</span> technology — <span class="t">it’s</span> a lifestyle.`}, 
+       {who:"hu",html:`This phone has quite a lot of features compared to similar phones in its price segment. It also has multiple features designed with visually impaired people in mind, which justify the high sales the company has been experiencing.`}], 
+   evidence:`68% of the AI passages contain negative parallelism, whereas only 21% of the human-written passages contain negative parallelism. "Rather than" is the single most overused phrase by AI. Negative Parallelism phrases like "rather than" are a strong sign of AI writing.`, 
+   q:{kind:"multi",prompt:"Which sentences use negative parallelism?",hint:"Select all that apply.", 
+      options:[{html:`"It's not just a phone, it's a companion."`,correct:true},{html:`"The shop opens at nine and closes at six."`,correct:false},{html:`"She ordered tea and a slice of cake."`,correct:false},{html:`"We chose reliability rather than flashy extras."`,correct:true}], 
+      explain:"Both correct answers put one idea against another (<b>not just… it's</b>, <b>rather than</b>). The others simply list things."}}, 
+
+ { id:"2d", section:"Rhythm & structure", title:`a word + "-ing" to show significance of something`, 
+   prev:{ai:40,human:8}, verdict:{label:"Strong signal",cls:"v-strong"}, 
+   teach:`<p>Look towards the end of sentences, as AI often adds a word + "-ing" phrase like <b>highlighting</b> (i.e. adding "-ing" to a word) to tell us why something is important. The sentence is often vague without adding any specific or useful information. This is a sign of AI writing, especially when a fact or other non-living thing is “highlighting,” “reflecting,” “showcasing,” or “ensuring” something, even though a fact cannot actually highlight anything. These words usually occur after a comma, and towards the end of a sentence.</p>  
+   <div class="word-list"><span class="lbl">Words to look out for</span>
+   highlighting, reflecting, showcasing, ensuring, emphasising, emphasizing, underscoring, demonstrating, signaling, paving, cementing, solidifying, reinforcing, marking, illustrating, representing, proving, serving, fostering, driving, drawing, creating, allowing, enabling, ushering.
+   </div>
+
+   <p><b>Example phrases using these words:</b> <em>"…, highlighting its importance." "…, reflecting broader trends." "…, showcasing its versatility." "…, ensuring lasting impact." "…, emphasising the need for…" "…, paving the way for…"</em></p>`, 
+   
+   ex:[{who:"ai",html:`The bridge opened in 1932, <span class="t">highlighting</span> the region’s engineering ambition and <span class="t">reflecting</span> a broader shift toward modern infrastructure.`}, 
+    {who:"hu",html:`This rail-cum-road bridge was inaugurated by the local viceroy in 1932. It has been talked about since then because of the engineering involved, which was quite ahead of its time. It’s standing strong even though many decades have passed.`}],   
+   evidence:`40% of the AI passages contain this word + "-ing" pattern, whereas only 8% of the human-written passages contain it. So this is a strong sign of AI writing.`, 
+   
+   q:{kind:"single",prompt:"Which sentence contains a word with a present participle towards the end?",hint:"Pick one.", 
+      options:[{html:`"…, so we closed the road for two days."`,correct:false},{html:`"…, which cost the council £4 million."`,correct:false},{html:`"…, underscoring its lasting importance."`,correct:true}], 
+      explain:"The sentence in the third option contains 'underscoring', which increases its significance without adding any new fact. The other examples convey something concrete, i.e., a consequence, such as closing the road, or a number, such as £4 million."}}, 
+
+ { id:"2e", section:"Rhythm & structure", title:`Covering "from X to Y" ranges`, 
+   prev:{ai:42,human:26}, verdict:{label:"Moderate signal",cls:"v-mod"}, 
+   teach:`<p>AI often writes in a way that makes the topic seem broader than it actually is by combining two unrelated things as though they were opposite ends of a range. It gives us the impression that the sentence covers everything in between those opposite ends.</p>`, 
+   ex:[{who:"ai",html:`<span class="t">From bustling cities to quiet villages</span>, and <span class="t">from ancient traditions to modern innovation</span>, the country offers something for everyone.`}, 
+    {who:"hu",html:`India’s population is evenly distributed between villages and Cities. Villages are known for their ancient traditions. Cities are leading in terms of innovation. This allows people to pursue their interests, whether by contributing to modern technology or reviving ancient traditions.`}],    evidence:`42% of the AI passages contain the "from X to Y" phrase, whereas 26% of the Human passages contain it. But if we look at per-1000-words data, AI writing has this phrase 0.748 times compared to 0.435 times in Human writing. So it can serve as a clue for detecting AI-written text.`, 
+   q:{kind:"single",prompt:"Which sentence uses the “from X to Y” phrase?",hint:"Pick one.", 
+      options:[{html:`"The city has three good night markets near the river."`,correct:false},{html:`"From street food to fine dining, the city has it all."`,correct:true},{html:`"We ate at a noodle stall on Tuesday."`,correct:false}], 
+      explain:"The second option uses 'from X to Y' phrase where X=street food and Y=fine dining."}}, 
+
+
+ { id:"3a", section:"Substance", title:"Having a Conclusion",
+   prev:{ai:28,human:14}, verdict:{label:"Moderate signal",cls:"v-mod"},
+   teach:`<p>AI often adds a summary/conclusion at the end, even when the text is already very short and does not need one. It tends to repeat the content of the passage in the conclusion.</p>
+   <div class="word-list"><span class="lbl">Phrases to look for</span>"In conclusion", "Overall", "In summary", "To sum up", "Ultimately", "All in all", "In Short", "To conclude"</div>`,
+   ex:[{who:"ai",html:`<span class="t">In conclusion</span>, this review shows the transformative potential of fiction-based research and offers useful tools for scholars in organization studies and other fields who want to explore this method.`},
+       {who:"hu",html:`This review focuses on organization and management studies, but aims to be of use to other researchers who wish to learn more about recent developments in fiction-based research and search for tools to experiment with this innovative method.`}],
+   evidence:`28% of AI passages have a conclusion as opposed to 14% of Human passages, so it's a useful sign, especially in short passages that don't need a summary.`,
+   q:{
+  kind:"single",
+  prompt:"Can we use the presence of a conclusion to flag a passage as AI-written?",
+  hint:"Pick one.",
+
+  options:[
+    {
+      html:"No, a conclusion is never a sign of AI writing.",
+      correct:false
+    },
+    {
+      html:"Yes, whenever a passage has a conclusion, we can flag it as AI-written.",
+      correct:false
+    },
+    {
+      html:"Yes, especially when the passage is short and does not need a conclusion, but we need to back it up with other signs of AI writing.",
+      correct:true
+    }
+  ],
+
+  explain: "A conclusion might not be present in short passages written by humans, but when the same passage is written by AI, it might be present. However, we should not flag a passage based on the conclusion alone and should look for other signs of AI writing as well."
+}},
+
+
+{ id:"3b", section:"Substance", title:"Quote attribution words",
+   prev:{ai:94,human:35}, verdict:{label:"Moderate signal",cls:"v-mod"},
+   teach:`<p>After a quotation, humans mostly write <em>"said"</em> whereas AI writes words like <em>"noted"</em>, <em>"explained"</em>,<em> "emphasized"</em>,<em> "stated" </em>, etc.</p>
+   <div class="word-list"><span class="lbl">Words to look for</span>
+"noted", "explained", "emphasized", "stated", "remarked", "observed", "added", "commented", "expressed", "highlighted", "reflected", "shared", "asserted", "affirmed", "underscored"
+</div>
+   <div class="gt"><div class="gt-col"><table class="gt-tab">
+     <thead><tr><th>Quote attribution</th><th>Human</th><th>AI</th></tr></thead>
+     <tbody>
+       <tr><td>"said"</td><td style="font-variant-numeric:tabula2r-nums">65%</td><td>6%</td></tr>
+       <tr><td>Other words like in the list above, i.e., "noted", etc.</td><td style="font-variant-numeric:tabular-nums">35%</td><td>94%</td></tr>
+     </tbody></table></div>
+   <div class="gt-src">% of quote attributions using "said" versus other words in our data.</div></div>`,
+   ex:[{who:"ai",html:`"This project represents a pivotal step forward for our community," <span class="t">noted</span> Sarah, <span class="t">emphasizing</span> the initiative's importance. "It is a testament to what we can achieve together."`},
+       {who:"hu",html:`"The whole community came forward to make the cleaning drive a huge success. This is what we can achieve if everyone comes together in such initiatives," she <span class="t">said</span>.`}],
+   evidence:`When AI attributes a quote, it uses "said" only about 6% of the time, whereas humans use "said" about 65% of the time. Other words, like those in the list above, are used about 94% of the time by AI, whereas humans use them only 35% of the time. As humans also use them, we need additional clues to identify a passage as AI-written or not.`,
+   q:{kind:"multi",prompt:"Which of these quote-attribution words does AI tend to use more often than humans?",hint:"Select all that apply.",
+   options:[{html:"underscored",correct:true},{html:"explained",correct:true},{html:"said",correct:false},{html:"emphasized",correct:true},{html:"stated",correct:true}],
+   explain:"Humans mostly use “said”, while AI often uses words such as “underscored”, “explained”, “emphasized”, and “stated”."}},
+
+  { id:"4a", section:"Tone & voice", title:"AI has no lived experience of anything",
+   prev:null, prevNote:"",noJudge:true,
+   verdict:{label:"Moderate signal",cls:"v-mod"},
+   teach:`<p>AI has no lived experiences to look up to, so it can't offer the specific details that come from actually being there, like the smell of a place, etc. We can see this in the example below. The AI-written text describes the museum in a very general way, without mentioning anything specific. In contrast, the human-written text refers to specific parts of the museum, such as the Brachiosaurus skeleton and the traditional art floor.</p>`,
+   ex:[{who:"ai",html:`<span class="t">Visiting the museum was a wonderful experience. There were many fascinating exhibits and the atmosphere was pleasant. A great day out for all ages.</span>`},
+       {who:"hu",html:`The skeleton of the Brachiosaurus is the thing to watch out for in the recently opened museum. Traditional art floor depicting local culture is also worth watching out for.`}],
+   q:{kind:"single",prompt:"Which of these sentences shows no sign of actually being there?",hint:"Pick one.",
+      options:[{html:`"The Mona Lisa painting in the exhibition is quite fascinating."`,correct:false},{html:`"A wonderful place with many fascinating exhibits and a pleasant atmosphere for all ages."`,correct:true}],
+      explain:"In the second sentence, there is no specific detail, such as what is fascinating."}},
+
+ { id:"4b", section:"Tone & voice", title:"Excessive Hedging & false balance",
+   prev:{ai:21,human:12}, verdict:{label:"Moderate signal",cls:"v-mod"},
+   teach:`<p>Excessive hedging means using too many cautious words instead of making a clear statement, while false balance means presenting two sides as equally valid or important when they do not need to be treated equally. AI is trained to avoid offence, so it often writes without taking a side, whereas a human might just take a side.</p>
+   <div class="word-list"><span class="lbl">Phrases to look for</span>
+    "while some ... others", "may include/seem/prefer/argue/find/feel/disagree",
+    "might include/seem/prefer/argue/find/feel/disagree",
+    "can prefer/argue/find/feel/disagree",
+    "could prefer/argue/find/feel/disagree"
+    </div>`,
+   ex:[{who:"ai",html:`<span class="t">While some</span> people may enjoy spicy food, <span class="t">others may prefer</span> milder flavours. <span class="t">Ultimately, it depends on</span> individual preference, and there is <span class="t">no right or wrong answer.</span>`},
+       {who:"hu",html:`This restaurant adds a lot of spices to its food. It’s definitely not for people who can’t handle spicy food; they might want to explore some other restaurant.`}],
+   evidence:`21% of the AI-written passages show hedging, and 12% of the human passages also show hedging. This needs to be used alongside other signs of AI writing to flag a particular passage as AI-written or not. `,
+   q:{kind:"single",prompt:"Which sentence shows hedging and doesn't take a side?",hint:"Pick one.",
+      options:[{html:`"The sequel is a letdown compared to the first part. We can skip watching it."`,correct:false},{html:`"While some people may enjoy the sequel, others might find it less engaging, and ultimately it depends on individual preference."`,correct:true}],
+      explain:"The second sentence doesn't take a side and presents different opinions as equally valid, whereas the first sentence takes a side and gives a clear opinion."}},
+
+  { id:"4c", section:"Tone & voice", title:"Increasing the importance of something",
+   prev:{ai:35,human:8}, verdict:{label:"Strong signal",cls:"v-strong"},
+   teach:`<p>AI often tells us that something is very important. It uses phrases like “absolutely essential”, “matters because”, “distinction matters”, “significant”, “crucial”, “essential”, or “cannot be overstated” to make something seem important.</p>
+   <div class="word-list"><span class="lbl">Phrases to look for</span>
+    "distinction matters", "matters because", "matters more than", "absolutely essential", "remarkably",
+    "cannot be overstated", "can't be overstated", "plays a crucial role", "is essential",
+    "is vital", "is paramount", "of paramount importance", "is absolutely key", "is key",
+    "invaluable", "the key is", "most significant", "equally important",
+    "particularly important", "especially important"
+   </div>`,
+   ex:[{who:"ai",html:`The <span class="t">importance of communication cannot be overstated</span>. It <span class="t">plays a crucial role</span> in every relationship and <span class="t">is essential</span> for success in all areas of life.`},
+       {who:"hu",html:`My friend has been suspended from the institute for a week after a miscommunication with the administration about using a motorcycle on campus.`}],
+   q:{kind:"single",prompt:"Which of these sentences increases the importance of Sleep like the way AI does?",hint:"Pick one.",
+      options:[{html:`"I slept only for four hours before the exam and couldn't perform well."`,correct:false},{html:`"Sleep is absolutely essential and its importance cannot be overstated."`,correct:true},{html:`"Sound sleep helps me to stay focused during the day."`,correct:false}],
+      explain:"AI often uses words like 'absolutely essential' and 'importance cannot be overstated' to emphasize something, often without explaining why it is important."}},
+
+  { id:"5a", section:"Formatting", title:"Ellipsis, parentheses & exclamation marks",
+   noJudge:true, verdict:{label:"Human-writing",cls:"v-flip"},
+   teach:`<p>AI <b>doesn't</b> tend to use the ellipsis "...", the parenthetical aside "()", or the exclamation mark "!", but Humans use them a lot. So if a passage contains ellipsis, parenthetical asides or an exclamation mark, then it's a strong sign of <b>Human</b> writing.</p>
+   <div class="gt"><div class="gt-col"><table class="gt-tab">
+     <thead><tr><th>Mark</th><th>Human</th><th>AI</th></tr></thead>
+     <tbody>
+       <tr><td>Exclamation (!)</td><td style="font-variant-numeric:tabular-nums">42.2%</td><td>2.0%</td></tr>
+       <tr><td>Parenthesis ( )</td><td style="font-variant-numeric:tabular-nums">73.0%</td><td>24.3%</td></tr>
+       <tr><td>Ellipsis (…)</td><td style="font-variant-numeric:tabular-nums">20.8%</td><td>0.4%</td></tr>
+     </tbody></table></div>
+   <div class="gt-src">% of passages containing ellipsis, parenthesis, and exclamation, from our run on 9,984 human vs 89,856 AI passages. We can see from the above table that Humans use exclamation marks 20 times more commonly than AI, and ellipsis 50 times more commonly than AI.</div></div>`,
+   ex:[{who:"ai",html:`The museum offers a wide range of exhibits and a welcoming atmosphere. It is a rewarding visit for families and enthusiasts alike.`},
+       {who:"hu",html:`I loved the whale skeleton<span class="t">!</span> <span class="t">(</span>located on the second floor of the museum<span class="t">)</span> The art floor was amazing too<span class="t">...</span>`}],
+   evidence:`So if we find () or ... or ! in a passage, then it's a strong sign of <b>Human<b> writing.`,
+   q:{kind:"single",prompt:"A clean passage has no exclamation marks, no parenthetical asides, and no ellipsis. Will you flag that passage as AI-written or Human-written?",hint:"Pick one.",
+      options:[{html:"I will flag it as Human-written",correct:false},{html:"I will flag it as AI after backing it up with a few more signs/clues of AI-writing",correct:true},{html:"I will flag it as AI immediately",correct:false}],
+      explain:"These punctuation marks are generally used by humans, and AI rarely uses them, so their absence in a passage is a mild AI signal, but we have to back it up with other signs to be completely sure that it is AI."}},
+
+ { id:"5b", section:"Formatting", title:"The em dash — we need to be careful with this sign",
+   prev:{ai:35,human:28}, verdict:{label:"Need to be Careful",cls:"v-flip"},
+   teach:`<p>AI uses em dashes ( — ), i.e. long dashes, a lot. But this is an <b>overrated</b> sign, as many expert human writers also use the em dash. Its use has <b>declined</b> in AI-written text recently, so we shouldn't rely on em dashes alone.</p>`,
+   ex:[{who:"ai",html:`LAKEWOOD <span class="t">&mdash;</span> A Toms River man was arrested on drug distribution and drunken driving charges after a traffic stop in Lakewood, police said.`},
+       {who:"hu",html:`That makes each and every one of our ebook files not just free, but libre too<span class="t">&mdash;</span>because the world deserves more unrestricted culture. <span class="note">(humans use em dashes too)</span>`}],
+   evidence:`AI uses em dashes 2.2 times on average per 1000 words, whereas Humans use them 1.2 times on average per 1000 words. Nowadays, AI uses em dashes much less than humans, so it is not a reliable sign for identifying a passage as AI-generated. `,
+   q:{kind:"single",prompt:"Is a single em dash (—) reliable proof of AI?",hint:"Pick one.",
+      options:[{html:"Yes, em dashes are a sign of AI writing.",correct:false},{html:"Yes, only if there are two or more in a sentence.",correct:false},{html:"No, as plenty of human writers also use it.",correct:true}],
+      explain:"AI used to use em dashes a lot previously but not anymore. So we shouldn't rely on it."}},
+
+
+];
+
+/* ---------------- engine ---------------- */
+const stage=document.getElementById("stage");
+const actionbar=document.getElementById("actionbar");
+const nextBtn=document.getElementById("nextBtn");
+const backBtn=document.getElementById("backBtn");
+const progfill=document.getElementById("progfill");
+const stepmeta=document.getElementById("stepmeta");
+const TOTAL=CUES.length;
+let phase="intro";        // "intro" | "cue" | "done"
+let idx=0;
+const solved=new Set();   // indices answered correctly (gate satisfied)
+
+/* resume (best-effort, per-viewer only) */
+try{const s=JSON.parse(localStorage.getItem("stt_v1")||"{}");
+  if(s&&typeof s.idx==="number"){phase=s.phase||"intro";idx=Math.max(0,Math.min(TOTAL-1,s.idx));
+    (s.solved||[]).forEach(i=>solved.add(i));}}catch(e){}
+function save(){try{localStorage.setItem("stt_v1",JSON.stringify({phase,idx,solved:[...solved]}));}catch(e){}}
+
+function setProgress(){
+  let pct=0;
+  if(phase==="intro")pct=0;
+  else if(phase==="done")pct=100;
+  else pct=Math.round((idx/(TOTAL))*100);
+  progfill.style.width=pct+"%";
+  if(phase==="cue"){stepmeta.innerHTML=`<b>${idx+1}</b> / ${TOTAL} &nbsp;&middot;&nbsp; ${CUES[idx].section}`;}
+  else if(phase==="done"){stepmeta.textContent="Complete";}
+  else{stepmeta.textContent=`${TOTAL} signs`;}
+}
+const esc=s=>s;
+
+function bars(c){
+  if(c.gtable){
+    const cols=c.gtable.cols.map(col=>`<div class="gt-col"><div class="gt-model">${col.model}</div>`
+      +`<table class="gt-tab"><thead><tr><th>Tell</th><th>× human rate</th></tr></thead><tbody>`
+      +col.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")+`</tbody></table></div>`).join("");
+    return `<div class="gt"><div class="gt-grid">${cols}</div><div class="gt-src">Per-model multipliers from the Graphite study — we haven't scored these in our own run.</div></div>`;
+  }
+  const p=c.prev;
+  if(!p) {
+    if(c.noJudge) return "";
+    return `<div class="judge">Judgement cue — this one can't be measured automatically, so there's no prevalence bar. Use it as a read-and-decide check.</div>`;
+  }
+  return `<div class="prev"><div class="cap">% of passages with this pattern</div>
+    <div class="prow ai"><span class="k">AI</span><div class="ptrack"><i data-w="${p.ai}"></i></div><span class="val">${p.ai}%</span></div>
+    <div class="prow hu"><span class="k">HUMAN</span><div class="ptrack"><i data-w="${p.human}"></i></div><span class="val">${p.human}%</span></div>
+    <div class="foot">This data is from our validation run on 9,984 articles i.e. 9,984 human vs 89,856 AI passages, across nine GPT, Claude &amp; Gemini models.</div></div>`;
+}
+function examples(ex){
+  if(!ex)return "";
+  const rows=ex.map(e=>`<div class="ex ${e.who}"><span class="who">${e.who==="ai"?"AI-STYLE":"HUMAN-STYLE"}</span>${e.html}</div>`).join("");
+  return `<div class="exwrap"><div class="exlbl">Example</div>${rows}</div>`;
+}
+function questionHTML(c){
+  const opts=c.q.options.map((o,i)=>{
+    const inp=c.q.kind==="multi"?`<input type="checkbox" name="opt" value="${i}">`:`<input type="radio" name="opt" value="${i}">`;
+    return `<label class="opt" data-i="${i}">${inp}<span class="olabel">${o.html}</span><span class="mk"></span></label>`;
+  }).join("");
+  const kind=c.q.kind==="multi"?"Select all that apply":"Choose one";
+  return `<div class="q"><div class="qtop"><div class="qkind">Checkpoint &middot; ${kind}</div>
+    <div class="qp">${c.q.prompt}</div><div class="qhint">${c.q.hint} You'll need the right answer to continue.</div></div>
+    <div class="opts">${opts}</div>
+    <div class="qfoot">
+      <button class="checkBtn" id="checkBtn" disabled>Check answer</button>
+      <div class="feedback" id="feedback"><span class="fi"></span><span class="ftxt"></span></div>
+    </div></div>`;
+}
+
+function renderCue(){
+  const c=CUES[idx];
+  const done=solved.has(idx);
+  stage.innerHTML=`<div class="card">
+    <div class="eyebrow">${c.section} &middot; Sign ${c.id}</div>
+    <div class="cuehead"><div class="badge">${c.id}</div>
+      <div><h1 class="title">${c.title}</h1>
+      <span class="verdict ${c.verdict.cls}"><span class="dot"></span>${c.verdict.label}</span></div></div>
+    ${bars(c)}
+    <div class="teach">${c.teach}</div>
+    ${c.evidence ? `<div class="evidence">${c.evidence}</div>` : ""}
+    ${examples(c.ex)}
+    ${questionHTML(c)}
+  </div>`;
+  // animate bars
+  requestAnimationFrame(()=>{stage.querySelectorAll(".ptrack>i").forEach(i=>i.style.width=(i.dataset.w||0)+"%");});
+  wireQuestion(c,done);
+  actionbar.hidden=false;
+  backBtn.disabled=(idx===0);
+  backBtn.textContent="Back";
+  nextBtn.textContent=(idx===TOTAL-1)?"Finish":"Continue";
+  nextBtn.disabled=!done;
+  setProgress();save();
+}
+
+function wireQuestion(c,done){
+  const opts=[...stage.querySelectorAll(".opt")];
+  const checkBtn=stage.querySelector("#checkBtn");
+  const feedback=stage.querySelector("#feedback");
+  const inputs=[...stage.querySelectorAll('input[name="opt"]')];
+  const correctSet=new Set(c.q.options.map((o,i)=>o.correct?i:-1).filter(i=>i>=0));
+
+  function selected(){return inputs.filter(x=>x.checked).map(x=>+x.value);}
+  function refreshSel(){opts.forEach(o=>{const i=+o.dataset.i;o.classList.toggle("sel",inputs[i].checked);});
+    checkBtn.disabled=selected().length===0;}
+  inputs.forEach(x=>x.addEventListener("change",refreshSel));
+
+  if(done){lockCorrect();return;}
+
+  checkBtn.addEventListener("click",()=>{
+    const sel=new Set(selected());
+    const ok = sel.size===correctSet.size && [...sel].every(i=>correctSet.has(i));
+    if(ok){
+      solved.add(idx);
+      lockCorrect();
+      feedback.className="feedback right show";
+      feedback.querySelector(".fi").textContent="✓";
+      feedback.querySelector(".ftxt").innerHTML="<b>That's it.</b> "+c.q.explain;
+      nextBtn.disabled=false;save();
+      nextBtn.animate?nextBtn.animate([{transform:"scale(1)"},{transform:"scale(1.04)"},{transform:"scale(1)"}],{duration:280}):0;
+    }else{
+      feedback.className="feedback wrong show";
+      feedback.querySelector(".fi").textContent="✗";
+      feedback.querySelector(".ftxt").textContent="Please take another look and try again.";
+      // mark clearly wrong picks
+      opts.forEach(o=>{const i=+o.dataset.i;o.classList.remove("bad");
+        if(inputs[i].checked && !correctSet.has(i))o.classList.add("bad");});
+    }
+  });
+
+  function lockCorrect(){
+    opts.forEach(o=>{const i=+o.dataset.i;o.classList.add("locked");o.classList.remove("sel","bad");
+      inputs[i].disabled=true;
+      if(correctSet.has(i)){o.classList.add("ok");o.querySelector(".mk").textContent="✓";inputs[i].checked=true;}
+      else{inputs[i].checked=false;o.querySelector(".mk").textContent="";}});
+    checkBtn.disabled=true;checkBtn.style.display="none";
+    feedback.className="feedback right show";
+    feedback.querySelector(".fi").textContent="✓";
+    feedback.querySelector(".ftxt").innerHTML="<b>Answer.</b> "+c.q.explain;
+  }
+  refreshSel();
+}
+
+function renderIntro(){
+  phase="intro";
+  stage.innerHTML=`<div class="card hero">
+    <div class="eyebrow">A short training on spotting AI-written text</div>
+
+    <h1>We will learn the signs of AI-writing</h1>
+
+    <p class="lede">
+      AI leaves some signs in its writing that differ from those of human writing.
+      There are <strong>18 signs of AI writing</strong> that we will learn in this guide.
+      Each sign will include an explanation, an example of AI-style and human-style writing,
+      some statistics, and a small question at the end. You can proceed to the next sign
+      once you answer the question correctly.
+    </p>
+  </div>`;
+  actionbar.hidden=false;
+  backBtn.disabled=true;
+  const resumable=solved.size>0;
+  nextBtn.textContent=resumable?"Resume":"Start the guide";
+  nextBtn.disabled=false;
+  setProgress();save();
+}
+
+function renderDone(){
+  phase="done";
+  const strong=CUES.filter(c=>c.verdict.cls==="v-strong");
+  const rows=CUES.map(c=>`<div class="rrow"><span><span class="rid">${c.id}</span> &nbsp;${c.title}</span>
+     <span class="rv ${c.verdict.cls}" style="color:var(--${c.verdict.cls==='v-strong'?'good':c.verdict.cls==='v-mod'?'warn':c.verdict.cls==='v-flip'?'flip':'weak'})">${c.verdict.label}</span></div>`).join("");
+  stage.innerHTML=`<div class="card done">
+    <div class="checkring">✓</div>
+    <div class="eyebrow">Guide complete</div>
+    <div class="big">These are all the clues/signs of AI writing we have read so far.</div>
+    <p class="lede">We should identify multiple of these clues/signs of AI-writing in a passage to flag a particular passage as AI-written.</p>
+    <div class="recap">${rows}</div>
+  </div>`;
+  actionbar.hidden=false;
+  backBtn.disabled=false;backBtn.textContent="Back";
+  nextBtn.textContent="Start over";nextBtn.disabled=false;
+  setProgress();save();
+}
+
+/* nav */
+nextBtn.addEventListener("click",()=>{
+  if(phase==="intro"){phase="cue";renderCue();window.scrollTo({top:0,behavior:"smooth"});return;}
+  if(phase==="done"){solved.clear();idx=0;renderIntro();window.scrollTo({top:0});return;}
+  if(!solved.has(idx))return;
+  if(idx===TOTAL-1){renderDone();window.scrollTo({top:0,behavior:"smooth"});}
+  else{idx++;renderCue();window.scrollTo({top:0,behavior:"smooth"});}
+});
+backBtn.addEventListener("click",()=>{
+  if(phase==="done"){phase="cue";idx=TOTAL-1;renderCue();window.scrollTo({top:0});return;}
+  if(phase==="cue"){if(idx===0){renderIntro();}else{idx--;renderCue();}window.scrollTo({top:0});}
+});
+
+/* theme toggle */
+const themeBtn=document.getElementById("themeBtn");
+function curTheme(){const a=document.documentElement.getAttribute("data-theme");
+  if(a)return a;return matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";}
+themeBtn.addEventListener("click",()=>{
+  const nowDark=curTheme()==="dark";
+  document.documentElement.setAttribute("data-theme",nowDark?"light":"dark");
+  try{localStorage.setItem("stt_theme",nowDark?"light":"dark");}catch(e){}});
+try{const t=localStorage.getItem("stt_theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}
+
+/* boot */
+if(phase==="cue")renderCue();
+else if(phase==="done")renderDone();
+else renderIntro();
+</script>
+</body>
+</html>
