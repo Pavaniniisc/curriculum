@@ -418,7 +418,7 @@ const CUES = [
 
 
 { id:"3b", section:"Substance", title:"Quote attribution words",
-   prev:{ai:94,human:35}, verdict:{label:"Moderate signal",cls:"v-mod"},
+   prev:{ai:66,human:16}, verdict:{label:"Moderate signal",cls:"v-mod"},
    teach:`<p>After a quotation, humans mostly write <em>"said"</em> whereas AI writes words like <em>"noted"</em>, <em>"explained"</em>,<em> "emphasized"</em>,<em> "stated" </em>, etc.</p>
    <div class="word-list"><span class="lbl">Words to look for</span>
 "noted", "explained", "emphasized", "stated", "remarked", "observed", "added", "commented", "expressed", "highlighted", "reflected", "shared", "asserted", "affirmed", "underscored"
@@ -426,13 +426,13 @@ const CUES = [
    <div class="gt"><div class="gt-col"><table class="gt-tab">
      <thead><tr><th>Quote attribution</th><th>Human</th><th>AI</th></tr></thead>
      <tbody>
-       <tr><td>"said"</td><td style="font-variant-numeric:tabula2r-nums">65%</td><td>6%</td></tr>
-       <tr><td>Other words like in the list above, i.e., "noted", etc.</td><td style="font-variant-numeric:tabular-nums">35%</td><td>94%</td></tr>
+       <tr><td>"said"</td><td style="font-variant-numeric:tabula2r-nums">84%</td><td>34%</td></tr>
+       <tr><td>Other words like in the list above, i.e., "noted", etc.</td><td style="font-variant-numeric:tabular-nums">16%</td><td>66%</td></tr>
      </tbody></table></div>
    <div class="gt-src">% of quote attributions using "said" versus other words in our data.</div></div>`,
    ex:[{who:"ai",html:`"This project represents a pivotal step forward for our community," <span class="t">noted</span> Sarah, <span class="t">emphasizing</span> the initiative's importance. "It is a testament to what we can achieve together."`},
        {who:"hu",html:`"The whole community came forward to make the cleaning drive a huge success. This is what we can achieve if everyone comes together in such initiatives," she <span class="t">said</span>.`}],
-   evidence:`When AI attributes a quote, it uses "said" only about 6% of the time, whereas humans use "said" about 65% of the time. Other words, like those in the list above, are used about 94% of the time by AI, whereas humans use them only 35% of the time. As humans also use them, we need additional clues to identify a passage as AI-written or not.`,
+   evidence:`When AI attributes a quote, it uses "said" only about 34% of the time, whereas humans use "said" about 84% of the time. Other words, like those in the list above, are used about 66% of the time by AI, whereas humans use them only 16% of the time. As humans also use them, we need additional clues to identify a passage as AI-written or not.`,
    q:{kind:"multi",prompt:"Which of these quote-attribution words does AI tend to use more often than humans?",hint:"Select all that apply.",
    options:[{html:"underscored",correct:true},{html:"explained",correct:true},{html:"said",correct:false},{html:"emphasized",correct:true},{html:"stated",correct:true}],
    explain:"Humans mostly use “said”, while AI often uses words such as “underscored”, “explained”, “emphasized”, and “stated”."}},
