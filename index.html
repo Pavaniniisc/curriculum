@@ -347,14 +347,14 @@ const CUES = [
       explain:"We will flag a passage as AI if we encounter many groups of three words in a passage, or if other signs of AI writing accompany it."}}, 
  
  { id:"2c", section:"Rhythm & structure", title:`"It's not just X, it's Y"`, 
-   prev:{ai:68,human:21}, verdict:{label:"Strong signal",cls:"v-strong"}, 
+   prev:{ai:73,human:35}, verdict:{label:"Strong signal",cls:"v-strong"}, 
    teach:`<p>A common way of writing is to put two opposite ideas together to make the sentence sound deep or important. This is also known as negative parallelism. Some of the forms of negative parallelism are "not just X but also Y," "not X but Y," and "X rather than Y." Using it once is fine. But using it repeatedly is a sign of AI writing.</p>
    <div class="word-list"><span class="lbl">Phrases to look for</span>
-   <em>"not just", "it's not just", "isn't just", "not merely", "more than just", "not only … but also", "rather than"</em>.
+   <em>"not just", "it's not just", "isn't just", "not merely", "not simply", "more than just", "not only … but also", "rather than"</em>.
    </div>`,
    ex:[{who:"ai",html:`This <span class="t">isn’t just</span> a phone — <span class="t">it’s</span> a companion. <span class="t">It’s not merely</span> about features; <span class="t">it’s about</span> how they make you feel. This is <span class="t">more than</span> technology — <span class="t">it’s</span> a lifestyle.`}, 
        {who:"hu",html:`This phone has quite a lot of features compared to similar phones in its price segment. It also has multiple features designed with visually impaired people in mind, which justify the high sales the company has been experiencing.`}], 
-   evidence:`68% of the AI passages contain negative parallelism, whereas only 21% of the human-written passages contain negative parallelism. "Rather than" is the single most overused phrase by AI. Negative Parallelism phrases like "rather than" are a strong sign of AI writing.`, 
+   evidence:`73% of the AI passages contain negative parallelism, whereas only 35% of the human-written passages contain negative parallelism. "Rather than" is the single most overused phrase by AI. Negative Parallelism phrases like "rather than" are a strong sign of AI writing.`, 
    q:{kind:"multi",prompt:"Which sentences use negative parallelism?",hint:"Select all that apply.", 
       options:[{html:`"It's not just a phone, it's a companion."`,correct:true},{html:`"The shop opens at nine and closes at six."`,correct:false},{html:`"She ordered tea and a slice of cake."`,correct:false},{html:`"We chose reliability rather than flashy extras."`,correct:true}], 
       explain:"Both correct answers put one idea against another (<b>not just… it's</b>, <b>rather than</b>). The others simply list things."}}, 
