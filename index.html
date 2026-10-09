@@ -492,7 +492,7 @@ const CUES = [
    <div class="gt-src">% of passages containing ellipsis, parenthesis, and exclamation, from our run on 9,984 human vs 89,856 AI passages. We can see from the above table that Humans use exclamation marks 20 times more commonly than AI, and ellipsis 50 times more commonly than AI.</div></div>`,
    ex:[{who:"ai",html:`The museum offers a wide range of exhibits and a welcoming atmosphere. It is a rewarding visit for families and enthusiasts alike.`},
        {who:"hu",html:`I loved the whale skeleton<span class="t">!</span> <span class="t">(</span>located on the second floor of the museum<span class="t">)</span> The art floor was amazing too<span class="t">...</span>`}],
-   evidence:`So if we find () or ... or ! in a passage, then it's a strong sign of <b>Human<b> writing.`,
+   evidence:`So if we find () or ... or ! in a passage, then it's a strong sign of <b>Human</b> writing.`,
    q:{kind:"single",prompt:"A clean passage has no exclamation marks, no parenthetical asides, and no ellipsis. Will you flag that passage as AI-written or Human-written?",hint:"Pick one.",
       options:[{html:"I will flag it as Human-written",correct:false},{html:"I will flag it as AI after backing it up with a few more signs/clues of AI-writing",correct:true},{html:"I will flag it as AI immediately",correct:false}],
       explain:"These punctuation marks are generally used by humans, and AI rarely uses them, so their absence in a passage is a mild AI signal, but we have to back it up with other signs to be completely sure that it is AI."}},
