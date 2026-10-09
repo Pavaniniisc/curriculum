@@ -360,7 +360,7 @@ const CUES = [
       explain:"Both correct answers put one idea against another (<b>not just… it's</b>, <b>rather than</b>). The others simply list things."}}, 
 
  { id:"2d", section:"Rhythm & structure", title:`a word + "-ing" to show significance of something`, 
-   prev:{ai:40,human:8}, verdict:{label:"Strong signal",cls:"v-strong"}, 
+   prev:{ai:41,human:9}, verdict:{label:"Strong signal",cls:"v-strong"}, 
    teach:`<p>Look towards the end of sentences, as AI often adds a word + "-ing" phrase like <b>highlighting</b> (i.e. adding "-ing" to a word) to tell us why something is important. The sentence is often vague without adding any specific or useful information. This is a sign of AI writing, especially when a fact or other non-living thing is “highlighting,” “reflecting,” “showcasing,” or “ensuring” something, even though a fact cannot actually highlight anything. These words usually occur after a comma, and towards the end of a sentence.</p>  
    <div class="word-list"><span class="lbl">Words to look out for</span>
    highlighting, reflecting, showcasing, ensuring, emphasising, emphasizing, underscoring, demonstrating, signaling, paving, cementing, solidifying, reinforcing, marking, illustrating, representing, proving, serving, fostering, driving, drawing, creating, allowing, enabling, ushering.
@@ -370,7 +370,7 @@ const CUES = [
    
    ex:[{who:"ai",html:`The bridge opened in 1932, <span class="t">highlighting</span> the region’s engineering ambition and <span class="t">reflecting</span> a broader shift toward modern infrastructure.`}, 
     {who:"hu",html:`This rail-cum-road bridge was inaugurated by the local viceroy in 1932. It has been talked about since then because of the engineering involved, which was quite ahead of its time. It’s standing strong even though many decades have passed.`}],   
-   evidence:`40% of the AI passages contain this word + "-ing" pattern, whereas only 8% of the human-written passages contain it. So this is a strong sign of AI writing.`, 
+   evidence:`41% of the AI passages contain this word + "-ing" pattern, whereas only 9% of the human-written passages contain it. So this is a strong sign of AI writing.`, 
    
    q:{kind:"single",prompt:"Which sentence contains a word with a present participle towards the end?",hint:"Pick one.", 
       options:[{html:`"…, so we closed the road for two days."`,correct:false},{html:`"…, which cost the council £4 million."`,correct:false},{html:`"…, underscoring its lasting importance."`,correct:true}], 
